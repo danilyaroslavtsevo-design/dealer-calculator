@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Калькулятор дилера">
+  <rect width="512" height="512" rx="112" fill="#6750a4"/>
+  <rect x="116" y="82" width="280" height="348" rx="42" fill="#fffbff"/>
+  <rect x="148" y="118" width="216" height="74" rx="18" fill="#eaddff"/>
+  <g fill="#6750a4">
+    <rect x="150" y="230" width="54" height="54" rx="14"/>
+    <rect x="229" y="230" width="54" height="54" rx="14"/>
+    <rect x="308" y="230" width="54" height="54" rx="14"/>
+    <rect x="150" y="305" width="54" height="54" rx="14"/>
+    <rect x="229" y="305" width="54" height="54" rx="14"/>
+    <rect x="308" y="305" width="54" height="54" rx="14"/>
+  </g>
+</svg>

@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#6750a4">
+  <meta name="color-scheme" content="light">
+  <title>Калькулятор дилера</title>
+  <link rel="manifest" href="./manifest.json">
+  <link rel="icon" href="./icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="./icon.svg">
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <header class="top-bar">
+      <h1>Калькулятор дилера</h1>
+      <button class="button button-outline top-action" id="settingsButton" type="button">
+        Настройки
+      </button>
+    </header>
+
+    <section class="input-table" aria-label="Товары">
+      <div class="table-grid table-header" aria-hidden="true">
+        <div>Закупочная цена</div>
+        <div>Цена продажи</div>
+        <div>Количество</div>
+      </div>
+      <div id="rowsContainer" class="rows-container"></div>
+    </section>
+
+    <section class="action-stack" aria-label="Действия со строками">
+      <div class="adaptive-actions">
+        <button class="button button-outline primary-action" id="addRowButton" type="button">
+          Добавить
+        </button>
+        <button class="button button-outline hold-button secondary-action" id="deleteRowButton" type="button">
+          <span class="hold-fill" id="deleteHoldFill" aria-hidden="true"></span>
+          <span class="button-text">Удалить</span>
+        </button>
+      </div>
+
+      <div class="adaptive-actions">
+        <button class="button button-filled primary-action" id="calculateButton" type="button">
+          Рассчитать
+        </button>
+        <button class="button button-outline secondary-action" id="clearButton" type="button">
+          Очистить
+        </button>
+      </div>
+    </section>
+
+    <p class="error-text" id="errorText" hidden></p>
+
+    <section class="result-card" id="resultCard" hidden aria-live="polite">
+      <div class="result-head">
+        <h2>Результат</h2>
+        <button class="text-button" id="detailsButton" type="button">Подробнее</button>
+      </div>
+      <div class="result-details" id="resultDetails" hidden></div>
+      <div id="mainResult"></div>
+    </section>
+  </main>
+
+  <dialog class="settings-dialog" id="settingsDialog">
+    <form method="dialog" class="dialog-card" id="settingsForm">
+      <h2>Настройки налогов</h2>
+
+      <label class="field">
+        <span>НДС закупки, %</span>
+        <input id="purchaseVatRateInput" type="text" inputmode="decimal" autocomplete="off">
+      </label>
+
+      <label class="field">
+        <span>НДС продажи, %</span>
+        <input id="saleVatRateInput" type="text" inputmode="decimal" autocomplete="off">
+      </label>
+
+      <label class="field">
+        <span>Налог на прибыль, %</span>
+        <input id="profitTaxRateInput" type="text" inputmode="decimal" autocomplete="off">
+      </label>
+
+      <p class="error-text dialog-error" id="settingsErrorText" hidden></p>
+
+      <div class="dialog-actions">
+        <button class="button button-outline" id="cancelSettingsButton" type="button">Отмена</button>
+        <button class="button button-filled" id="saveSettingsButton" type="submit">Сохранить</button>
+      </div>
+    </form>
+  </dialog>
+
+  <div class="toast" id="toast" role="status" aria-live="polite" hidden>Скопировано</div>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
