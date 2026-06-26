@@ -1,4 +1,4 @@
-const CACHE_NAME = "dealer-calculator-pwa-v1";
+const CACHE_NAME = "dealer-calculator-pwa-v2";
 const APP_SHELL = [
   "./",
   "./index.html",
@@ -6,6 +6,8 @@ const APP_SHELL = [
   "./app.js",
   "./manifest.json",
   "./icon.svg",
+  "./icon-192.png",
+  "./icon-512.png",
 ];
 
 self.addEventListener("install", (event) => {
