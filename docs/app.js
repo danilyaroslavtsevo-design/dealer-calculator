@@ -1,5 +1,11 @@
 const STORAGE_KEY = "dealer_calculator_tax_settings";
-const DEFAULT_TAX_RATE = "20";
+const DEFAULT_TAX_SETTINGS = {
+  purchaseVatRateText: "15",
+  saleVatRateText: "22",
+  profitTaxRateText: "13",
+};
+const SETTINGS_UNLOCK_SEQUENCE = ["calculate", "calculate", "add", "add", "calculate", "clear", "clear"];
+const SETTINGS_UNLOCK_WINDOW_MS = 3000;
 const DELETE_MODE = {
   ONE_TIME: "oneTime",
   CONTINUOUS: "continuous",
@@ -17,6 +23,8 @@ const state = {
   holdTimer: null,
   holdAnimationFrame: null,
   holdStartTime: 0,
+  settingsUnlockIndex: 0,
+  settingsUnlockStartTime: 0,
 };
 
 const els = {
@@ -47,16 +55,12 @@ function loadTaxSettings() {
   try {
     const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     return {
-      purchaseVatRateText: saved.purchaseVatRateText || DEFAULT_TAX_RATE,
-      saleVatRateText: saved.saleVatRateText || DEFAULT_TAX_RATE,
-      profitTaxRateText: saved.profitTaxRateText || DEFAULT_TAX_RATE,
+      purchaseVatRateText: saved.purchaseVatRateText || DEFAULT_TAX_SETTINGS.purchaseVatRateText,
+      saleVatRateText: saved.saleVatRateText || DEFAULT_TAX_SETTINGS.saleVatRateText,
+      profitTaxRateText: saved.profitTaxRateText || DEFAULT_TAX_SETTINGS.profitTaxRateText,
     };
   } catch {
-    return {
-      purchaseVatRateText: DEFAULT_TAX_RATE,
-      saleVatRateText: DEFAULT_TAX_RATE,
-      profitTaxRateText: DEFAULT_TAX_RATE,
-    };
+    return { ...DEFAULT_TAX_SETTINGS };
   }
 }
 
@@ -442,6 +446,43 @@ function openSettings() {
   els.settingsDialog.showModal();
 }
 
+function trackSettingsUnlock(action) {
+  if (!els.settingsButton.hidden) return;
+
+  const now = performance.now();
+  if (state.settingsUnlockIndex > 0 && now - state.settingsUnlockStartTime > SETTINGS_UNLOCK_WINDOW_MS) {
+    resetSettingsUnlock();
+  }
+
+  if (action === SETTINGS_UNLOCK_SEQUENCE[state.settingsUnlockIndex]) {
+    if (state.settingsUnlockIndex === 0) {
+      state.settingsUnlockStartTime = now;
+    }
+
+    state.settingsUnlockIndex += 1;
+
+    if (state.settingsUnlockIndex === SETTINGS_UNLOCK_SEQUENCE.length) {
+      els.settingsButton.hidden = false;
+      resetSettingsUnlock();
+    }
+
+    return;
+  }
+
+  if (action === SETTINGS_UNLOCK_SEQUENCE[0]) {
+    state.settingsUnlockIndex = 1;
+    state.settingsUnlockStartTime = now;
+    return;
+  }
+
+  resetSettingsUnlock();
+}
+
+function resetSettingsUnlock() {
+  state.settingsUnlockIndex = 0;
+  state.settingsUnlockStartTime = 0;
+}
+
 function saveSettingsFromDialog() {
   const purchaseVatRateText = els.purchaseVatRateInput.value.trim();
   const saleVatRateText = els.saleVatRateInput.value.trim();
@@ -479,14 +520,23 @@ function showSettingsError(text) {
 }
 
 function bindEvents() {
-  els.addRowButton.addEventListener("click", addRow);
+  els.addRowButton.addEventListener("click", () => {
+    trackSettingsUnlock("add");
+    addRow();
+  });
   els.deleteRowButton.addEventListener("click", handleDeleteButtonClick);
   els.deleteRowButton.addEventListener("pointerdown", startDeleteHold);
   els.deleteRowButton.addEventListener("pointerup", stopDeleteHold);
   els.deleteRowButton.addEventListener("pointercancel", stopDeleteHold);
   els.deleteRowButton.addEventListener("pointerleave", stopDeleteHold);
-  els.calculateButton.addEventListener("click", calculate);
-  els.clearButton.addEventListener("click", clearRows);
+  els.calculateButton.addEventListener("click", () => {
+    trackSettingsUnlock("calculate");
+    calculate();
+  });
+  els.clearButton.addEventListener("click", () => {
+    trackSettingsUnlock("clear");
+    clearRows();
+  });
   els.detailsButton.addEventListener("click", () => {
     state.isResultCollapsed = !state.isResultCollapsed;
     renderResult();
